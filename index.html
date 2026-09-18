@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTool Box // v5.0 Ultimate Edition by Keshav Gaur</title>
+    
+    <style>
+        :root {
+            --bg: #030712;
+            --panel: #0f172a;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --text: #e2e8f0;
+            --border: #334155;
+            --success: #22c55e;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Top Header Bar */
+        .topbar {
+            height: 50px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 0.95rem;
+        }
+
+        .brand {
+            color: var(--accent);
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .dev-tag {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .dev-tag a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .dev-tag a:hover {
+            text-decoration: underline;
+        }
+
+        /* Workspace Layout */
+        .workspace {
+            display: flex;
+            flex-grow: 1;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 290px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            text-align: left;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        /* Main Display Panel */
+        .main-panel {
+            flex-grow: 1;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            background: #1e293b;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--border);
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .panel-body {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .tool-section {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            gap: 12px;
+        }
+
+        .tool-section.active {
+            display: flex;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            background: #020617;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px;
+            border-radius: 6px;
+            outline: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            resize: none;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #020617;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--accent);
+            color: #030712;
+        }
+
+        .output-box {
+            background: #020617;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 6px;
+            min-height: 90px;
+            max-height: 180px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-size: 0.85rem;
+            color: #38bdf8;
+        }
+
+        .error-text {
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Header -->
+    <div class="topbar">
+        <div class="brand">> DEVTOOL_BOX // v5.0 ULTIMATE</div>
+        <div class="dev-tag">Developer: <span style="color:var(--accent);">Keshav Gaur</span> | IG: <a href="https://instagram.com/keshavv.47" target="_blank">@keshavv.47</a></div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-title">Core Utilities</div>
+            <button class="nav-btn active" onclick="switchTool('jsonTool', this)">📦 JSON Formatter</button>
+            <button class="nav-btn" onclick="switchTool('base64Tool', this)">🔤 Base64 Encoder/Decoder</button>
+            <button class="nav-btn" onclick="switchTool('hashTool', this)">🔒 SHA-256 Hash Generator</button>
+            <button class="nav-btn" onclick="switchTool('wordTool', this)">📊 Text Counter</button>
+            
+            <div class="sidebar-title">Advanced Utilities</div>
+            <button class="nav-btn" onclick="switchTool('jwtTool', this)">🔑 JWT Token Decoder</button>
+            <button class="nav-btn" onclick="switchTool('epochTool', this)">⏱️ Epoch & Date Converter</button>
+            <button class="nav-btn" onclick="switchTool('uuidTool', this)">🆔 UUID v4 Generator</button>
+            <button class="nav-btn" onclick="switchTool('urlTool', this)">🌐 URL Encoder/Decoder</button>
+
+            <div class="sidebar-title">Pro Dev Utilities</div>
+            <button class="nav-btn" onclick="switchTool('colorTool', this)">🎨 CSS Color Converter</button>
+            <button class="nav-btn" onclick="switchTool('markdownTool', this)">📝 Markdown Previewer</button>
+            <button class="nav-btn" onclick="switchTool('cronTool', this)">⏰ CRON Explainer</button>
+            <button class="nav-btn" onclick="switchTool('regexTool', this)">🔍 Regex Matcher</button>
+
+            <div class="sidebar-title">Master Suite</div>
+            <button class="nav-btn" onclick="switchTool('sqlTool', this)">🗄️ SQL Formatter</button>
+            <button class="nav-btn" onclick="switchTool('ipTool', this)">🌐 IP Info & Subnet</button>
+            <button class="nav-btn" onclick="switchTool('passTool', this)">🛡️ Password Entropy</button>
+            <button class="nav-btn" onclick="switchTool('diffTool', this)">⚖️ Text Diff Checker</button>
+
+            <div class="sidebar-title">v5.0 Powerhouse</div>
+            <button class="nav-btn" onclick="switchTool('sandboxTool', this)">💻 Live Code Sandbox</button>
+            <button class="nav-btn" onclick="switchTool('imgBase64Tool', this)">🖼️ Image to Base64</button>
+            <button class="nav-btn" onclick="switchTool('httpTool', this)">🌐 HTTP Status Codes</button>
+            <button class="nav-btn" onclick="switchTool('storageTool', this)">💾 Storage Sandbox</button>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <div class="panel-header" id="panelTitle">JSON Formatter & Validator</div>
+            
+            <div class="panel-body">
+                <!-- 1. JSON Formatter -->
+                <div id="jsonTool" class="tool-section active">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Paste raw or minified JSON to format and validate:</p>
+                    <textarea id="jsonInput" rows="5" placeholder="Paste JSON here..."></textarea>
+                    <div class="btn-row">
+                        <button class="action-btn" onclick="formatJSON()">Format & Validate</button>
+                        <button class="action-btn" onclick="clearField('jsonInput', 'jsonOutput')">Clear</button>
+                    </div>
+                    <div class="output-box" id="jsonOutput">Output will appear here...</div>
+                </div>
+
+                <!-- 2. Base64 -->
+                <div id="base64Tool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Encode text to Base64 or decode from Base64 string:</p>
+                    <textarea id="base64Input" rows="5" placeholder="Enter text or base64 string..."></textarea>
+                    <div class="btn-row">
+                        <button class="action-btn" onclick="encodeBase64()">Encode</button>
+                        <button class="action-btn" onclick="decodeBase64()">Decode</button>
+                        <button class="action-btn" onclick="clearField('base64Input', 'base64Output')">Clear</button>
+                    </div>
+                    <div class="output-box" id="base64Output">Result will appear here...</div>
+                </div>
+
+                <!-- 3. SHA-256 Hash -->
+                <div id="hashTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Generate a secure SHA-256 cryptographic hash instantly:</p>
+                    <input type="text" id="hashInput" placeholder="Type text to hash..." oninput="generateHash()">
+                    <div class="output-box" id="hashOutput" style="margin-top: 10px;">Hash value will appear here...</div>
+                </div>
+
+                <!-- 4. Text Counter -->
+                <div id="wordTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Real-time analysis of words, characters, and lines:</p>
+                    <textarea id="wordInput" rows="5" placeholder="Type or paste text here..." oninput="countText()"></textarea>
+                    <div id="wordOutput" style="font-size: 0.9rem; color: var(--accent); display: flex; gap: 20px; background: #020617; padding: 12px; border: 1px solid var(--border); border-radius: 6px;">
+                        <span>Words: 0</span>
+                        <span>Characters: 0</span>
+                        <span>Lines: 0</span>
+                    </div>
+                </div>
+
+                <!-- 5. JWT Decoder -->
+                <div id="jwtTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Paste JWT token to decode Header and Payload safely:</p>
+                    <textarea id="jwtInput" rows="5" placeholder="eyJhbGciOi..."></textarea>
+                    <div class="btn-row">
+                        <button class="action-btn" onclick="decodeJWT()">Decode JWT</button>
+                        <button class="action-btn" onclick="clearField('jwtInput', 'jwtOutput')">Clear</button>
+                    </div>
+                    <div class="output-box" id="jwtOutput">Decoded payload will appear here...</div>
+                </div>
+
+                <!-- 6. Epoch Converter -->
+                <div id="epochTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Convert Unix Timestamp to Date or vice versa:</p>
+                    <input type="text" id="epochInput" placeholder="Enter Epoch timestamp (e.g., 1718362800)..." oninput="convertEpoch()">
+                    <div class="output-box" id="epochOutput" style="margin-top: 5px;">Human readable date will appear here...</div>
+                    <div class="btn-row" style="margin-top: 5px;">
+                        <button class="action-btn" onclick="setCurrentEpoch()">Get Current Epoch</button>
+                    </div>
+                </div>
+
+                <!-- 7. UUID Generator -->
+                <div id="uuidTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Generate cryptographic random Universally Unique Identifiers (UUID v4):</p>
+                    <div class="btn-row">
+                        <button class="action-btn" onclick="generateUUID()">Generate New UUID</button>
+                    </div>
+                    <div class="output-box" id="uuidOutput" style="margin-top: 10px; font-size: 1rem; text-align: center; display: flex; align-items: center; justify-content: center;">Click above to generate UUID</div>
+                </div>
+
+                <!-- 8. URL Encoder/Decoder -->
+                <div id="urlTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Safely encode or decode URL components and query strings:</p>
+                    <textarea id="urlInput" rows="5" placeholder="Enter URL or text..."></textarea>
+                    <div class="btn-row">
+                        <button class="action-btn" onclick="encodeURL()">Encode URL</button>
+                        <button class="action-btn" onclick="decodeURL()">Decode URL</button>
+                        <button class="action-btn" onclick="clearField('urlInput', 'urlOutput')">Clear</button>
+                    </div>
+                    <div class="output-box" id="urlOutput">Processed URL will appear here...</div>
+                </div>
+
+                <!-- 9. CSS Color Converter -->
+                <div id="colorTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Enter HEX code (e.g. #38bdf8) or RGB (e.g. 56,189,248):</p>
+                    <input type="text" id="colorInput" placeholder="Enter color value..." oninput="convertColor()">
+                    <div class="output-box" id="colorOutput" style="margin-top: 10px;">Color formats will appear here...</div>
+                </div>
+
+                <!-- 10. Markdown Previewer -->
+                <div id="markdownTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Type Markdown text to preview HTML live:</p>
+                    <textarea id="markdownInput" rows="5" placeholder="# Heading\n**Bold text**..." oninput="renderMarkdown()"></textarea>
+                    <div class="output-box" id="markdownOutput" style="margin-top: 5px;">HTML preview will appear here...</div>
+                </div>
+
+                <!-- 11. CRON Explainer -->
+                <div id="cronTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Enter a 5-part cron expression (e.g., */5 * * * *):</p>
+                    <input type="text" id="cronInput" placeholder="* * * * *" oninput="explainCron()">
+                    <div class="output-box" id="cronOutput" style="margin-top: 10px;">Cron description will appear here...</div>
+                </div>
+
+                <!-- 12. Regex Matcher -->
+                <div id="regexTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Test Regular Expressions against input text:</p>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="regexPattern" placeholder="Pattern (e.g. \d+)" oninput="testRegex()" style="flex-grow: 3;">
+                        <input type="text" id="regexFlags" placeholder="Flags (gi)" value="g" oninput="testRegex()" style="flex-grow: 1;">
+                    </div>
+                    <textarea id="regexText" rows="3" placeholder="Test string here..." oninput="testRegex()" style="margin-top: 5px;"></textarea>
+                    <div class="output-box" id="regexOutput" style="margin-top: 5px;">Matches will appear here...</div>
+                </div>
+
+                <!-- 13. SQL Formatter -->
+                <div id="sqlTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Format and uppercase SQL query clauses:</p>
+                    <textarea id="sqlInput" rows="5" placeholder="SELECT id, name FROM users WHERE age > 18..."></textarea>
+                    <div class="btn-row">
+                        <button class="action-btn" onclick="formatSQL()">Format SQL</button>
+                        <button class="action-btn" onclick="clearField('sqlInput', 'sqlOutput')">Clear</button>
+                    </div>
+                    <div class="output-box" id="sqlOutput">Formatted SQL will appear here...</div>
+                </div>
+
+                <!-- 14. IP Info Analyzer -->
+                <div id="ipTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Analyze IP address details and Class ranges:</p>
+                    <input type="text" id="ipInput" placeholder="Enter IP (e.g. 192.168.1.1)" oninput="analyzeIP()">
+                    <div class="output-box" id="ipOutput" style="margin-top: 10px;">IP network info will appear here...</div>
+                </div>
+
+                <!-- 15. Password Entropy -->
+                <div id="passTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Test password strength and estimated brute-force time:</p>
+                    <input type="text" id="passInput" placeholder="Type password to check..." oninput="analyzePassword()">
+                    <div class="output-box" id="passOutput" style="margin-top: 10px;">Security metrics will appear here...</div>
+                </div>
+
+                <!-- 16. Text Diff -->
+                <div id="diffTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Compare two text snippets for differences:</p>
+                    <div style="display: flex; gap: 10px;">
+                        <textarea id="diffOriginal" rows="3" placeholder="Original text..." oninput="checkDiff()"></textarea>
+                        <textarea id="diffModified" rows="3" placeholder="Modified text..." oninput="checkDiff()"></textarea>
+                    </div>
+                    <div class="output-box" id="diffOutput" style="margin-top: 5px;">Comparison results will appear here...</div>
+                </div>
+
+                <!-- 17. Live Code Sandbox -->
+                <div id="sandboxTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Write HTML/CSS/JS and run live preview instantly:</p>
+                    <div style="display: flex; gap: 10px; height: 130px;">
+                        <textarea id="sandboxHTML" placeholder="HTML code..." oninput="runSandbox()" style="flex: 1; height: 100%;"></textarea>
+                        <textarea id="sandboxCSS" placeholder="CSS code..." oninput="runSandbox()" style="flex: 1; height: 100%;"></textarea>
+                    </div>
+                    <iframe id="sandboxPreview" style="width: 100%; height: 120px; background: #fff; border: 1px solid var(--border); border-radius: 6px; margin-top: 5px;"></iframe>
+                </div>
+
+                <!-- 18. Image to Base64 -->
+                <div id="imgBase64Tool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Upload or select an image to convert to Base64 Data-URI:</p>
+                    <input type="file" id="imageInput" accept="image/*" onchange="convertImageToBase64()" style="background:#020617; border:1px solid var(--border); padding:10px; border-radius:6px; color:var(--text);">
+                    <textarea id="imgBase64Output" rows="4" placeholder="Base64 Data-URI will appear here..." readonly style="margin-top: 5px;"></textarea>
+                </div>
+
+                <!-- 19. HTTP Status Codes -->
+                <div id="httpTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Search or lookup HTTP status codes:</p>
+                    <input type="text" id="httpInput" placeholder="Enter status code (e.g., 200, 404, 500)..." oninput="lookupHTTP()">
+                    <div class="output-box" id="httpOutput" style="margin-top: 10px;">Status description will appear here...</div>
+                </div>
+
+                <!-- 20. Storage Sandbox -->
+                <div id="storageTool" class="tool-section">
+                    <p style="font-size: 0.85rem; color: #94a3b8;">Manage LocalStorage key-value pairs safely:</p>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="storageKey" placeholder="Key name">
+                        <input type="text" id="storageVal" placeholder="Value">
+                    </div>
+                    <div class="btn-row" style="margin-top: 5px;">
+                        <button class="action-btn" onclick="setStorageItem()">Set Item</button>
+                        <button class="action-btn" onclick="getStorageItem()">Get Item</button>
+                        <button class="action-btn" onclick="clearStorage()">Clear All</button>
+                    </div>
+                    <div class="output-box" id="storageOutput" style="margin-top: 5px;">Storage data will appear here...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTool(toolId, btn) {
+            document.querySelectorAll('.tool-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(toolId).classList.add('active');
+            btn.classList.add('active');
+
+            let titles = {
+                'jsonTool': 'JSON Formatter & Validator',
+                'base64Tool': 'Base64 Encoder / Decoder',
+                'hashTool': 'SHA-256 Hash Generator',
+                'wordTool': 'Text & Character Counter',
+                'jwtTool': 'JWT Token Decoder',
+                'epochTool': 'Unix Epoch & Date Converter',
+                'uuidTool': 'UUID v4 Generator',
+                'urlTool': 'URL Encoder / Decoder',
+                'colorTool': 'CSS Color Converter (HEX / RGB)',
+                'markdownTool': 'Markdown to HTML Previewer',
+                'cronTool': 'CRON Expression Explainer',
+                'regexTool': 'Live Regex Matcher & Tester',
+                'sqlTool': 'SQL Query Formatter',
+                'ipTool': 'IP Address & Subnet Info',
+                'passTool': 'Password Strength & Entropy Analyzer',
+                'diffTool': 'Text Diff Comparator',
+                'sandboxTool': 'Live HTML/CSS/JS Code Sandbox',
+                'imgBase64Tool': 'Image to Base64 Converter',
+                'httpTool': 'HTTP Status Code Lookup',
+                'storageTool': 'LocalStorage Sandbox Manager'
+            };
+            document.getElementById('panelTitle').innerText = titles[toolId];
+        }
+
+        function clearField(inputId, outputId) {
+            document.getElementById(inputId).value = '';
+            let out = document.getElementById(outputId);
+            out.className = "output-box";
+            out.innerText = "Output will appear here...";
+        }
+
+        // 1. JSON Formatter
+        function formatJSON() {
+            let input = document.getElementById('jsonInput').value;
+            let output = document.getElementById('jsonOutput');
+            output.className = "output-box";
+            try {
+                if(!input.trim()) { output.innerText = "Please enter some JSON data."; return; }
+                let parsed = JSON.parse(input);
+                output.innerText = JSON.stringify(parsed, null, 4);
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] Invalid JSON Error: " + err.message;
+            }
+        }
+
+        // 2. Base64
+        function encodeBase64() {
+            let val = document.getElementById('base64Input').value;
+            let output = document.getElementById('base64Output');
+            output.className = "output-box";
+            try { output.innerText = btoa(val); } 
+            catch (err) { output.className = "output-box error-text"; output.innerText = "[!] Encoding Error: " + err.message; }
+        }
+        function decodeBase64() {
+            let val = document.getElementById('base64Input').value;
+            let output = document.getElementById('base64Output');
+            output.className = "output-box";
+            try { output.innerText = atob(val); } 
+            catch (err) { output.className = "output-box error-text"; output.innerText = "[!] Decoding Error: Invalid Base64 string."; }
+        }
+
+        // 3. SHA-256 Hash
+        async function generateHash() {
+            let val = document.getElementById('hashInput').value;
+            let output = document.getElementById('hashOutput');
+            if(!val) { output.innerText = "Hash value will appear here..."; return; }
+            try {
+                const msgBuffer = new TextEncoder().encode(val);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                output.innerText = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch (err) {
+                output.innerText = "[!] Hash Error: " + err.message;
+            }
+        }
+
+        // 4. Text Counter
+        function countText() {
+            let text = document.getElementById('wordInput').value;
+            let words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            let chars = text.length;
+            let lines = text.trim() === '' ? 0 : text.split('\n').length;
+            document.getElementById('wordOutput').innerHTML = `<span>Words: ${words}</span><span>Characters: ${chars}</span><span>Lines:${lines}</span>`;
+        }
+
+        // 5. JWT Decoder
+        function decodeJWT() {
+            let token = document.getElementById('jwtInput').value.trim();
+            let output = document.getElementById('jwtOutput');
+            output.className = "output-box";
+            if(!token) { output.innerText = "Please enter a JWT token."; return; }
+            try {
+                let parts = token.split('.');
+                if (parts.length !== 3) throw new Error("Invalid JWT structure.");
+                let header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+                let payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                output.innerText = "--- HEADER ---\n" + JSON.stringify(header, null, 4) + "\n\n--- PAYLOAD ---\n" + JSON.stringify(payload, null, 4);
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] JWT Decode Error: " + err.message;
+            }
+        }
+
+        // 6. Epoch Converter
+        function convertEpoch() {
+            let val = document.getElementById('epochInput').value.trim();
+            let output = document.getElementById('epochOutput');
+            output.className = "output-box";
+            if(!val) { output.innerText = "Human readable date will appear here..."; return; }
+            try {
+                let timestamp = Number(val);
+                if(isNaN(timestamp)) throw new Error("Not a valid number.");
+                if(val.length <= 10) timestamp *= 1000;
+                let date = new Date(timestamp);
+                if(isNaN(date.getTime())) throw new Error("Invalid timestamp date range.");
+                output.innerText = "UTC: " + date.toUTCString() + "\nLocal: " + date.toString();
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] Epoch Error: " + err.message;
+            }
+        }
+        function setCurrentEpoch() {
+            document.getElementById('epochInput').value = Math.floor(Date.now() / 1000);
+            convertEpoch();
+        }
+
+        // 7. UUID Generator
+        function generateUUID() {
+            let output = document.getElementById('uuidOutput');
+            try {
+                output.innerText = crypto.randomUUID();
+            } catch (err) {
+                output.innerText = "[!] UUID Generation Error: " + err.message;
+            }
+        }
+
+        // 8. URL Encoder/Decoder
+        function encodeURL() {
+            let val = document.getElementById('urlInput').value;
+            let output = document.getElementById('urlOutput');
+            output.className = "output-box";
+            try { output.innerText = encodeURIComponent(val); } 
+            catch (err) { output.className = "output-box error-text"; output.innerText = "[!] Encode Error: " + err.message; }
+        }
+        function decodeURL() {
+            let val = document.getElementById('urlInput').value;
+            let output = document.getElementById('urlOutput');
+            output.className = "output-box";
+            try { output.innerText = decodeURIComponent(val); } 
+            catch (err) { output.className = "output-box error-text"; output.innerText = "[!] Decode Error: Invalid URL encoding string."; }
+        }
+
+        // 9. CSS Color Converter
+        function convertColor() {
+            let val = document.getElementById('colorInput').value.trim();
+            let output = document.getElementById('colorOutput');
+            output.className = "output-box";
+            if(!val) { output.innerText = "Color formats will appear here..."; return; }
+            try {
+                let r=0, g=0, b=0;
+                if(val.startsWith('#')) {
+                    let hex = val.replace('#', '');
+                    if(hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+                    if(hex.length !== 6) throw new Error("Invalid HEX length.");
+                    r = parseInt(hex.substring(0, 2), 16);
+                    g = parseInt(hex.substring(2, 4), 16);
+                    b = parseInt(hex.substring(4, 6), 16);
+                } else if(val.includes(',')) {
+                    let parts = val.split(',').map(Number);
+                    if(parts.length !== 3 || parts.some(isNaN)) throw new Error("Invalid RGB format.");
+                    [r, g, b] = parts;
+                } else {
+                    throw new Error("Use #HEX or R,G,B format.");
+                }
+                let hexVal = "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+                output.innerText = `HEX: ${hexVal.toUpperCase()}\nRGB: rgb(${r}, ${g},${b})`;
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] Color Error: " + err.message;
+            }
+        }
+
+        // 10. Markdown Previewer
+        function renderMarkdown() {
+            let val = document.getElementById('markdownInput').value;
+            let output = document.getElementById('markdownOutput');
+            try {
+                let html = val
+                    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/\n/g, '<br>');
+                output.innerHTML = html;
+            } catch (err) {
+                output.innerText = "[!] Markdown Error: " + err.message;
+            }
+        }
+
+        // 11. CRON Explainer
+        function explainCron() {
+            let val = document.getElementById('cronInput').value.trim();
+            let output = document.getElementById('cronOutput');
+            output.className = "output-box";
+            if(!val) { output.innerText = "Cron description will appear here..."; return; }
+            try {
+                let parts = val.split(/\s+/);
+                if(parts.length !== 5) throw new Error("Cron must have exactly 5 parts.");
+                output.innerText = `[✓] Valid CRON Expression\nMinute: ${parts[0]}\nHour: ${parts[1]}\nDay of Month: ${parts[2]}\nMonth: ${parts[3]}\nDay of Week: ${parts[4]}`;
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] CRON Error: " + err.message;
+            }
+        }
+
+        // 12. Regex Matcher
+        function testRegex() {
+            let pattern = document.getElementById('regexPattern').value;
+            let flags = document.getElementById('regexFlags').value;
+            let text = document.getElementById('regexText').value;
+            let output = document.getElementById('regexOutput');
+            output.className = "output-box";
+            if(!pattern || !text) { output.innerText = "Matches will appear here..."; return; }
+            try {
+                let regex = new RegExp(pattern, flags);
+                let matches = text.match(regex);
+                if(matches) {
+                    output.innerText = `Total Matches: ${matches.length}\nResult: ${JSON.stringify(matches)}`;
+                } else {
+                    output.innerText = "No matches found.";
+                }
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] Regex Error: " + err.message;
+            }
+        }
+
+        // 13. SQL Formatter
+        function formatSQL() {
+            let val = document.getElementById('sqlInput').value;
+            let output = document.getElementById('sqlOutput');
+            output.className = "output-box";
+            if(!val.trim()) { output.innerText = "Please enter an SQL query."; return; }
+            try {
+                let formatted = val
+                    .replace(/\bselect\b/gi, '\nSELECT')
+                    .replace(/\bfrom\b/gi, '\nFROM')
+                    .replace(/\bwhere\b/gi, '\nWHERE')
+                    .replace(/\band\b/gi, '\n  AND')
+                    .replace(/\bor\b/gi, '\n  OR')
+                    .replace(/\bjoin\b/gi, '\nJOIN')
+                    .replace(/\bgroup by\b/gi, '\nGROUP BY')
+                    .replace(/\border by\b/gi, '\nORDER BY')
+                    .trim();
+                output.innerText = formatted;
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] SQL Error: " + err.message;
+            }
+        }
+
+        // 14. IP Info Analyzer
+        function analyzeIP() {
+            let ip = document.getElementById('ipInput').value.trim();
+            let output = document.getElementById('ipOutput');
+            output.className = "output-box";
+            if(!ip) { output.innerText = "IP network info will appear here..."; return; }
+            try {
+                let parts = ip.split('.').map(Number);
+                if(parts.length !== 4 || parts.some(p => isNaN(p) || p < 0 || p > 255)) {
+                    throw new Error("Invalid IPv4 address format.");
+                }
+                let type = "Public IP";
+                if(parts[0] === 10 || (parts[0] === 192 && parts[1] === 168) || (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31)) {
+                    type = "Private (Local) IP";
+                } else if(parts[0] === 127) {
+                    type = "Loopback IP";
+                }
+                output.innerText = `[✓] Valid IPv4 Address\nAddress: ${ip}\nClass Type: ${type}\nOctets: [${parts.join(', ')}]`;
+            } catch (err) {
+                output.className = "output-box error-text";
+                output.innerText = "[!] IP Error: " + err.message;
+            }
+        }
+
+        // 15. Password Entropy
+        function analyzePassword() {
+            let pwd = document.getElementById('passInput').value;
+            let output = document.getElementById('passOutput');
+            output.className = "output-box";
+            if(!pwd) { output.innerText = "Security metrics will appear here..."; return; }
+            let len = pwd.length;
+            let hasLower = /[a-z]/.test(pwd);
+            let hasUpper = /[A-Z]/.test(pwd);
+            let hasNum = /[0-9]/.test(pwd);
+            let hasSym = /[^a-zA-Z0-9]/.test(pwd);
+            let charsetSize = (hasLower ? 26 : 0) + (hasUpper ? 26 : 0) + (hasNum ? 10 : 0) + (hasSym ? 32 : 0);
+            let entropy = Math.round(len * Math.log2(charsetSize || 1));
+            let strength = entropy > 60 ? "Strong 🛡️" : entropy > 35 ? "Moderate ⚠️" : "Weak ❌";
+            output.innerText = `Strength: ${strength}\nEntropy: ~${entropy} bits\nLength: ${len} chars`;
+        }
+
+        // 16. Text Diff
+        function checkDiff() {
+            let orig = document.getElementById('diffOriginal').value;
+            let mod = document.getElementById('diffModified').value;
+            let output = document.getElementById('diffOutput');
+            output.className = "output-box";
+            if(!orig && !mod) { output.innerText = "Comparison results will appear here..."; return; }
+            if(orig === mod) {
+                output.innerText = "[✓] Both texts are identical (No differences found).";
+            } else {
+                output.innerText = `[!] Differences detected.\nOriginal Length: ${orig.length} chars\nModified Length: ${mod.length} chars`;
+            }
+        }
+
+        // 17. Live Sandbox
+        function runSandbox() {
+            let html = document.getElementById('sandboxHTML').value;
+            let css = document.getElementById('sandboxCSS').value;
+            let frame = document.getElementById('sandboxPreview');
+            let content = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}</body></html>`;
+            try {
+                let doc = frame.contentDocument || frame.contentWindow.document;
+                doc.open();
+                doc.write(content);
+                doc.close();
+            } catch(e) {}
+        }
+
+        // 18. Image to Base64
+        function convertImageToBase64() {
+            let fileInput = document.getElementById('imageInput');
+            let output = document.getElementById('imgBase64Output');
+            if (fileInput.files && fileInput.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    output.value = e.target.result;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        // 19. HTTP Status Lookup
+        function lookupHTTP() {
+            let code = document.getElementById('httpInput').value.trim();
+            let output = document.getElementById('httpOutput');
+            output.className = "output-box";
+            let statuses = {
+                '200': '200 OK - Standard response for successful HTTP requests.',
+                '201': '201 Created - Request has been fulfilled and resulted in a new resource.',
+                '400': '400 Bad Request - Server cannot process the request due to client error.',
+                '401': '401 Unauthorized - Authentication is required or failed.',
+                '403': '403 Forbidden - Server refuses to authorize the request.',
+                '404': '404 Not Found - Requested resource could not be found.',
+                '500': '500 Internal Server Error - Generic error message for unexpected server conditions.',
+                '502': '502 Bad Gateway - Server received an invalid response from upstream server.'
+            };
+            if(!code) { output.innerText = "Status description will appear here..."; return; }
+            output.innerText = statuses[code] || "Custom or Unknown HTTP Status Code.";
+        }
+
+        // 20. Storage Sandbox
+        function setStorageItem() {
+            let k = document.getElementById('storageKey').value;
+            let v = document.getElementById('storageVal').value;
+            let out = document.getElementById('storageOutput');
+            if(!k) { out.innerText = "Please provide a key name."; return; }
+            localStorage.setItem(k, v);
+            out.innerText = `[✓] Successfully stored key: "${k}"`;
+        }
+        function getStorageItem() {
+            let k = document.getElementById('storageKey').value;
+            let out = document.getElementById('storageOutput');
+            if(!k) { out.innerText = "Please provide a key name to fetch."; return; }
+            let val = localStorage.getItem(k);
+            out.innerText = val !== null ? `Value for "${k}": ${val}` : `[!] Key "${k}" not found in LocalStorage.`;
+        }
+        function clearStorage() {
+            localStorage.clear();
+            document.getElementById('storageOutput').innerText = "[✓] LocalStorage completely cleared!";
+        }
+    </script>
+</body>
+</html>
